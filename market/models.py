@@ -61,6 +61,18 @@ class SubCategory(models.Model):
 #########################
 #########################
 
+class Tag(models.Model):
+    title = models.CharField(_('Title'), max_length=25)
+
+    def __str__(self):
+        return '#' + self.title
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+
+#########################
+#########################
 
 class Product(models.Model):
     __original_status = None
@@ -100,7 +112,7 @@ class Product(models.Model):
                                   null=True, blank=True, editable=False)
     order = models.PositiveIntegerField(_('Order'), default=0)
     capacity = models.PositiveIntegerField(_('Capacity'), default=0)
-    tags = models.ManyToManyField()
+    tags = models.ManyToManyField(Tag, verbose_name=_('Tags'))
 
     def __str__(self):
         return self.name
@@ -112,16 +124,4 @@ class Product(models.Model):
 #########################
 #########################
 
-class Tag(models.Model):
-    title = models.CharField(_('Title'), max_length=25)
-
-    def __str__(self):
-        return '#' + self.title
-
-    class Meta:
-        verbose_name = _("Tag")
-        verbose_name_plural = _("Tags")
-
-#########################
-#########################
 

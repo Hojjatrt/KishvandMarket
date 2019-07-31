@@ -32,7 +32,7 @@ class SubCategoryListSerializer(ModelSerializer):
 class SubCatProductSerializer(ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name',)
+        fields = ('id', 'title',)
 
 ##################
 ##################
@@ -51,7 +51,7 @@ class TagProductSerializer(ModelSerializer):
 ##################
 
 class ProductListSerializer(ModelSerializer):
-    categories = StringRelatedField(many=True)
+    categories = SubCatProductSerializer(many=True)
     tags = StringRelatedField(many=True)
 
     class Meta:

@@ -32,8 +32,16 @@ class ProductListAPIView(generics.ListAPIView):
     # permission_classes = (IsClient,)
     pagination_class = SmallPagesPagination
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductListSerializer
+    lookup_field = 'id'
+
 ##################
 ##################
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MainCategoryListAPIView(generics.ListAPIView):

@@ -1,31 +1,38 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.serializers import *
 from market.models import *
 
+##################
+##################
+
+
+class SmallPagesPagination(PageNumberPagination):
+    page_size = 20
+
+
+class LargePagesPagination(PageNumberPagination):
+    page_size = 50
 
 ##################
 ##################
 
 class CategoryListSerializer(ModelSerializer):
     class Meta:
-        model = MainCategory
-        fields = ('id', 'title')
+        depth = 1
+        model = Category
+        fields = ('id', 'title', 'thumbnail', 'children', 'order')
 
 
 class SubCategoryListSerializer(ModelSerializer):
     class Meta:
-        model = SubCategory
-        fields = ('id', 'title', 'thumbnail', 'parent__title')
+        model = Category
+        fields = ('id', 'title', 'parent', 'order')
 
-##################
-##################
 
-class ProductListSerializer(ModelSerializer):
-    # category = CatProductSerializer()
-    # producer = ProducerSerializer()
-
+class SubCatProductSerializer(ModelSerializer):
     class Meta:
-        model = Product
-        fields = '__all__'
+        model = Category
+        fields = ('name',)
 
 ##################
 ##################
@@ -35,3 +42,18 @@ class TagListSerializer(ModelSerializer):
         model = Tag
         fields = '__all__'
 
+class TagProductSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('title',)
+
+##################
+##################
+
+class ProductListSerializer(ModelSerializer):
+    categories = StringRelatedField(many=True)
+    tags = StringRelatedField(many=True)
+
+    class Meta:
+        model = Product
+        fields = '__all__'

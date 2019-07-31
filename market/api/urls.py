@@ -1,9 +1,11 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
+from .views import *
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path(r'^api-auth/', include('rest_framework.urls')),
-    path(r'^market/', include('market.urls'))
+    path(r'products/', ProductListAPIView.as_view(), name='products'),
+    path(r'maincategories/', MainCategoryListAPIView.as_view(), name='maincategories'),
+    path(r'subcategories/', SubCategoryListAPIView.as_view(), name='subcategories'),
 ]

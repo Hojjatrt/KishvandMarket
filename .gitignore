@@ -86,6 +86,8 @@ target/
 *.pot
 *.pyc
 __pycache__/
+media/*
+static/*
 local_settings.py
 
 .env

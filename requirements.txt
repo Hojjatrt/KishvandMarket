@@ -1,3 +1,4 @@
+django-jsonfield
 Django==2.2.3
 django-autocomplete-light==3.4.1
 django-filter==2.2.0

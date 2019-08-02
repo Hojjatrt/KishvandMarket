@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'market.apps.MarketConfig',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [

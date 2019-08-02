@@ -1,7 +1,13 @@
 import sys
 from PIL import Image
 from io import BytesIO
+
+from django.contrib.admin.widgets import AdminFileWidget
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.safestring import mark_safe
+from sorl.thumbnail import get_thumbnail
+
+from KishvandMarket import settings
 
 
 def resize(low_pic, high_pic, size=(300, 300), size2=None, quality=100):
@@ -51,3 +57,31 @@ def resize(low_pic, high_pic, size=(300, 300), size2=None, quality=100):
         high_img.save(output2)
 
     return (low_pic , high_pic)
+
+#################
+#################
+
+
+def thumbnail(image_path):
+    t = get_thumbnail(image_path, '100x100', crop='center', quality=99)
+    return u'<img src="%s" alt="%s">' % (t.absolute_url, image_path)
+
+
+class AdminImageWidget(AdminFileWidget):
+    """
+    A FileField Widget that displays an image instead of a file path
+    if the current file is an image.
+    """
+    def render(self, name, value, attrs=None):
+        output = []
+        if value:
+            file_path = '%s%s' % (settings.MEDIA_URL, value)
+            try:
+                output.append('<a target="_blank" href="%s">%s</a><br />' %
+                              (file_path, thumbnail(value)))
+            except IOError:
+                output.append('%s <a target="_blank" href="%s">%s</a> <br />%s ' %
+                              ('Currently:', file_path, value, 'Change:'))
+
+        output.append(super(AdminImageWidget, self).render(name, value, attrs))
+        return mark_safe(u''.join(output))

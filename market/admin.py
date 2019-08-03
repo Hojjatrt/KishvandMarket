@@ -69,9 +69,12 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display_links = ('get_image', 'title',)
 
     def get_image(self, obj):
-        return mark_safe('<img src="{url}" width="100" height=100 />'.format(
-            url=obj.thumb.url,)
-        )
+        if obj.thumbnail:
+            return mark_safe('<img src="{url}" width="100" height=100 />'.format(
+                url=obj.thumbnail.url,)
+            )
+        else:
+            return None
 
 ######################
 ######################

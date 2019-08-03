@@ -63,8 +63,22 @@ class ImageAdmin(AdminImageMixin, admin.ModelAdmin):
 ######################
 
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('get_image', 'title', 'parent')
+    list_filter = ('parent',)
+    list_display_links = ('get_image', 'title',)
+
+    def get_image(self, obj):
+        return mark_safe('<img src="{url}" width="100" height=100 />'.format(
+            url=obj.thumb.url,)
+        )
+
+######################
+######################
+
+
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)

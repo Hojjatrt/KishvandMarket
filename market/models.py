@@ -36,7 +36,7 @@ class Category(models.Model):
                                   upload_to=PathAndRename('Cat/t/{}'.format(time.strftime("%Y/%m/%d"))),
                                   null=True, blank=True)
     order = models.PositiveSmallIntegerField(_('Order'), default=0)
-    param = jsonfield.JSONField(_('Parameters'), max_length=300, null=True, default=[])
+    param = jsonfield.JSONField(_('Parameters'), max_length=300)
 
     def __init__(self, *args, **kwargs):
         super(Category, self).__init__(*args, **kwargs)
@@ -57,6 +57,25 @@ class Category(models.Model):
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
+
+#########################
+#########################
+
+
+class Baseinfo(models.Model):
+    title = models.CharField(_('Value'), max_length=50)
+    parent = models.ForeignKey('self', verbose_name=_('P_id'), null=True, blank=True,
+                               on_delete=models.CASCADE)
+
+    comment = models.TextField(_('Comment'), max_length=200, default='')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = _("Baseinfo")
+        verbose_name_plural = _("Baseinfos")
+
 
 #########################
 #########################

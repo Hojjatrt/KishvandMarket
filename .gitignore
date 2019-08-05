@@ -88,6 +88,7 @@ target/
 __pycache__/
 media/*
 static/*
+*/migrations/*
 local_settings.py
 
 .env

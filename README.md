@@ -1,1 +1,0 @@
-A django web application 

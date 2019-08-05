@@ -36,7 +36,7 @@ class Category(models.Model):
                                   upload_to=PathAndRename('Cat/t/{}'.format(time.strftime("%Y/%m/%d"))),
                                   null=True, blank=True)
     order = models.PositiveSmallIntegerField(_('Order'), default=0)
-    param = jsonfield.JSONField(_('Parameters'), max_length=300)
+    param = jsonfield.JSONField(_('Parameters'), max_length=300, null=True, default=[])
 
     def __init__(self, *args, **kwargs):
         super(Category, self).__init__(*args, **kwargs)

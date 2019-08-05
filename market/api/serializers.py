@@ -16,6 +16,7 @@ class LargePagesPagination(PageNumberPagination):
 ##################
 ##################
 
+
 class CategoryListSerializer(ModelSerializer):
     class Meta:
         depth = 1
@@ -37,10 +38,12 @@ class SubCatProductSerializer(ModelSerializer):
 ##################
 ##################
 
+
 class TagListSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
 
 class TagProductSerializer(ModelSerializer):
     class Meta:
@@ -50,6 +53,25 @@ class TagProductSerializer(ModelSerializer):
 ##################
 ##################
 
+
+class ImageSerializer(ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ('image',)
+
+##################
+##################
+
+
+class StockSerializer(ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = '__all__'
+
+##################
+##################
+
+
 class ProductListSerializer(ModelSerializer):
     categories = SubCatProductSerializer(many=True)
     tags = StringRelatedField(many=True)
@@ -57,3 +79,53 @@ class ProductListSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+    def to_representation(self, instance):
+        stock = Stock.objects.filter(product_id=instance.id).order_by('price').first()
+        data = super(ProductListSerializer, self).to_representation(instance)
+        data.update()
+        if instance.thumb:
+            data.update({
+                "thumb": settings.MEDIA_URL + instance.thumb,
+                "qnt": stock.qnt,
+                "price": stock.price,
+                "discount": stock.discount_ratio,
+            })
+        else:
+            data.update({
+                "thumb": instance.thumb,
+                "qnt": stock.qnt,
+                "price": stock.price,
+                "discount": stock.discount_ratio,
+            })
+        return data
+
+
+class ProductDetailSerializer(ModelSerializer):
+    categories = SubCatProductSerializer(many=True)
+    tags = StringRelatedField(many=True)
+    images = ImageSerializer(many=True, source='image_set')
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        stock = Stock.objects.filter(product_id=instance.id).order_by('price').first()
+        data = super(ProductDetailSerializer, self).to_representation(instance)
+        data.update()
+        if instance.thumb:
+            data.update({
+                "thumb": settings.MEDIA_URL + instance.thumb,
+                "qnt": stock.qnt,
+                "price": stock.price,
+                "discount": stock.discount_ratio,
+            })
+        else:
+            data.update({
+                "thumb": instance.thumb,
+                "qnt": stock.qnt,
+                "price": stock.price,
+                "discount": stock.discount_ratio,
+            })
+        return data

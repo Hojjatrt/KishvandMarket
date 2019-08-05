@@ -34,16 +34,9 @@ class ProductListAPIView(generics.ListAPIView):
     # permission_classes = (IsClient,)
     pagination_class = SmallPagesPagination
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            res = Response(self.get_paginated_response(serializer.data), status=status.HTTP_200_OK)
-            res['Access-Control-Allow-Origin'] = '*'
-            return res
-        serializer = self.get_serializer(queryset, many=True)
-        res = Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        li = self.list(request, *args, **kwargs)
+        res = Response(li.data, status=status.HTTP_200_OK)
         res['Access-Control-Allow-Origin'] = '*'
         return res
 
@@ -51,13 +44,12 @@ class ProductListAPIView(generics.ListAPIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductListSerializer
+    serializer_class = ProductDetailSerializer
     lookup_field = 'id'
 
-    def retrieve(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset)
-        res = Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        ret = self.retrieve(request, *args, **kwargs)
+        res = Response(ret.data, status=status.HTTP_200_OK)
         res['Access-Control-Allow-Origin'] = '*'
         return res
 

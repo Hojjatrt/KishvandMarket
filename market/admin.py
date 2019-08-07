@@ -92,9 +92,19 @@ class BaseInfoAdmin(admin.ModelAdmin):
 ######################
 
 
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('addr', 'u_id')
+    list_filter = ('u_id',)
+    list_display_links = ('addr',)
+
+
+######################
+######################
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Baseinfo, BaseInfoAdmin)
+admin.site.register(Address, AddressAdmin)

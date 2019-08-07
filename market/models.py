@@ -80,9 +80,9 @@ class Baseinfo(models.Model):
         verbose_name = _("Baseinfo")
         verbose_name_plural = _("Baseinfos")
 
+#########################
+#########################
 
-#########################
-#########################
 
 class Address(models.Model):
     lat = models.CharField(_('Lat'), max_length=15)
@@ -92,8 +92,10 @@ class Address(models.Model):
     zip = models.CharField(_('ZipCode'), max_length=10)
     u_id = models.ForeignKey(User, verbose_name=_('U_id'), null=True, blank=True,
                              on_delete=models.CASCADE)
+
     def __str__(self):
         return self.addr[:20] + '...'
+
     class Meta:
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")

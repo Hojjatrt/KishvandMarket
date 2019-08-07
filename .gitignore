@@ -90,7 +90,7 @@ media/*
 static/*
 */migrations/*
 !*/migrations/__init__.py
-*/local_settings.py
+*/settings.py
 *.py__jb_tmp__
 .env
 db.sqlite3

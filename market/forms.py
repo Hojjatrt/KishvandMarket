@@ -11,3 +11,12 @@ class ProductAdminForm(forms.ModelForm):
             'categories': autocomplete.ModelSelect2Multiple(url='subcategory-autocomplete'),
             'tags': autocomplete.ModelSelect2Multiple(url='tag-autocomplete')
         }
+
+
+class CategoryAdminForm(forms.ModelForm):
+    para = forms.CharField(max_length=50, required=True)
+    value = forms.CharField(max_length=50, required=True)
+
+    class Meta:
+        model = Category
+        exclude = ('param',)

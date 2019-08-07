@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import *
 from market.models import *
@@ -86,7 +87,7 @@ class ProductListSerializer(ModelSerializer):
         data.update()
         if instance.thumb:
             data.update({
-                "thumb": settings.MEDIA_URL + instance.thumb,
+                "thumb": settings.BASE_URL + settings.MEDIA_URL + instance.thumb,
                 "qnt": stock.qnt,
                 "price": stock.price,
                 "discount": stock.discount_ratio,
@@ -116,7 +117,7 @@ class ProductDetailSerializer(ModelSerializer):
         data.update()
         if instance.thumb:
             data.update({
-                "thumb": settings.MEDIA_URL + instance.thumb,
+                "thumb": settings.BASE_URL + settings.MEDIA_URL + instance.thumb,
                 "qnt": stock.qnt,
                 "price": stock.price,
                 "discount": stock.discount_ratio,

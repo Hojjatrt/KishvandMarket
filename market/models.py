@@ -101,6 +101,8 @@ class Address(models.Model):
 
 #########################
 #########################
+
+
 class Tag(models.Model):
     title = models.CharField(_('Title'), max_length=25)
 

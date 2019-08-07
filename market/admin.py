@@ -33,6 +33,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'status')
     list_filter = ('status', 'categories')
     list_display_links = ('id', 'name',)
+    readonly_fields = ('thumb',)
     inlines = (ProductSpecies_inline, ProductParameters_inline, ProductStocks_inline,
                ProductImage_inline)
     form = ProductAdminForm
@@ -76,6 +77,17 @@ class CategoryAdmin(admin.ModelAdmin):
         else:
             return None
 
+    # form = CategoryAdminForm
+
+######################
+######################
+
+
+class BaseInfoAdmin(admin.ModelAdmin):
+    list_display = ('value', 'parent')
+    list_filter = ('parent',)
+    list_display_links = ('value',)
+
 ######################
 ######################
 
@@ -85,3 +97,4 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
+admin.site.register(Baseinfo, BaseInfoAdmin)

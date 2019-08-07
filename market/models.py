@@ -1,6 +1,8 @@
 from uuid import uuid4
 import os, time
 from django.db import models
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 from market.fields import *
@@ -63,14 +65,14 @@ class Category(models.Model):
 
 
 class Baseinfo(models.Model):
-    title = models.CharField(_('Value'), max_length=50)
-    parent = models.ForeignKey('self', verbose_name=_('P_id'), null=True, blank=True,
+    value = models.CharField(_('Value'), max_length=50)
+    parent = models.ForeignKey('self', verbose_name=_('Parent'), null=True, blank=True,
                                on_delete=models.CASCADE)
 
     comment = models.TextField(_('Comment'), max_length=200, default='')
 
     def __str__(self):
-        return self.title
+        return self.value
 
     class Meta:
         verbose_name = _("Baseinfo")
@@ -119,12 +121,12 @@ class Product(models.Model):
     order = models.PositiveIntegerField(_('Order'), default=0)
     tags = models.ManyToManyField(Tag, verbose_name=_('Tags'))
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None, *args, **kwargs):
-        imgs = Image.objects.filter(prod=self.id, main=True).last()
-        if imgs is not None:
-            self.thumb = imgs.image.name
-        super(Product, self).save(force_insert, force_update, *args, **kwargs)
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None, *args, **kwargs):
+    #     imgs = Image.objects.filter(prod=self.id, main=True).last()
+    #     if imgs is not None:
+    #         self.thumb = imgs.image.name
+    #     super(Product, self).save(force_insert, force_update, *args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -186,6 +188,10 @@ class Image(models.Model):
             self.image = resize(low_pic=self.image, high_pic=self.image, size=(700, 700))[0]
 
         super(Image, self).save(force_insert, force_update, *args, **kwargs)
+        if self.main:
+            self.prod.thumb = self.image.name
+            self.prod.save(force_update=True)
+
         self.__original_pic = self.image.name
 
     def __str__(self):

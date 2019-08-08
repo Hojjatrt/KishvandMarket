@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
-    'market.apps.MarketConfig',
     'sorl.thumbnail',
+    'market.apps.MarketConfig',
+    'userapp.apps.UserappConfig',
 ]
 
 MIDDLEWARE = [
@@ -103,7 +105,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+    ],
 }
 
 # Internationalization
@@ -131,6 +136,8 @@ BASE_URL = u'http://kishvand.pythonanywhere.com'
 # LOGIN_REDIRECT_URL = '/manager/'
 #
 # LOGIN_URL = '/manager/login'
+
+AUTH_USER_MODEL = 'userapp.User'
 
 try:
     from local_settings import *

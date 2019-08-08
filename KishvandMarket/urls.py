@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('market/', include('market.urls')),
+    path('auth/', include('userapp.urls')),
     path('api/', include('market.api.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

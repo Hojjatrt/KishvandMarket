@@ -38,11 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
     'django_filters',
-    'sorl.thumbnail',
     'market.apps.MarketConfig',
     'userapp.apps.UserappConfig',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -105,10 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # <-- And here
-    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 # Internationalization
@@ -133,11 +129,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 BASE_URL = u'http://kishvand.pythonanywhere.com'
+
+AUTH_USER_MODEL = 'userapp.User'
+
 # LOGIN_REDIRECT_URL = '/manager/'
 #
 # LOGIN_URL = '/manager/login'
-
-AUTH_USER_MODEL = 'userapp.User'
 
 try:
     from local_settings import *

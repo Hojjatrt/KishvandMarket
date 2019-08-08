@@ -46,3 +46,21 @@ class Address(models.Model):
 #########################
 #########################
 
+class Massage(models.Model):
+    text = models.CharField(_('Text'), max_length=300)
+    name = models.CharField(_('name'), max_length=50)
+
+
+#########################
+#########################
+
+
+class Sms(models.Model):
+    code = models.CharField(_('Code'), max_length=6)
+    user = models.ManyToManyField(User, verbose_name=_('User'), null=True, blank=True)
+    massage = models.ForeignKey(Massage, verbose_name=_('Massage_id'), null=True, blank=True,
+                                on_delete=models.CASCADE)
+    date_time = models.DateField(_('Date_Time'))
+
+#########################
+#########################

@@ -98,3 +98,4 @@ admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Baseinfo, BaseInfoAdmin)
+

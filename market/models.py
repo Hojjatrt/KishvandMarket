@@ -1,7 +1,5 @@
 from uuid import uuid4
 import os, time
-
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
@@ -79,27 +77,6 @@ class Baseinfo(models.Model):
     class Meta:
         verbose_name = _("Baseinfo")
         verbose_name_plural = _("Baseinfos")
-
-#########################
-#########################
-
-
-class Address(models.Model):
-    lat = models.CharField(_('Lat'), max_length=15)
-    lng = models.CharField(_('Lng'), max_length=15)
-    addr = models.TextField(_('Address'), max_length=300)
-    phone = models.CharField(_('Phone number'), max_length=11)
-    zip = models.CharField(_('ZipCode'), max_length=10)
-    u_id = models.ForeignKey(User, verbose_name=_('U_id'), null=True, blank=True,
-                             on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.addr[:20] + '...'
-
-    class Meta:
-        verbose_name = _("Address")
-        verbose_name_plural = _("Addresses")
-
 
 #########################
 #########################

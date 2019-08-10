@@ -1,7 +1,17 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from userapp.models import *
+from django.utils.translation import ugettext_lazy as _
 # Register your models here.
+
+######################
+######################
+
+
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('addr', 'user')
+    list_filter = ('user',)
+    list_display_links = ('addr',)
 
 ######################
 ######################
@@ -21,15 +31,6 @@ class MyUserAdmin(admin.ModelAdmin):
 ######################
 ######################
 
-
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ('addr', 'user')
-    list_filter = ('user',)
-    list_display_links = ('addr',)
-
-
-######################
-######################
 
 admin.site.register(Address, AddressAdmin)
 admin.site.register(User, MyUserAdmin)

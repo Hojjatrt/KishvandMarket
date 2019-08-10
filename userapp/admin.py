@@ -17,7 +17,32 @@ class AddressAdmin(admin.ModelAdmin):
 ######################
 
 
-class MyUserAdmin(admin.ModelAdmin):
+class SmsInlineAdmin(admin.TabularInline):
+    model = Sms.users.through
+    extra = 0
+    fields = ['code', 'created_at']
+    readonly_fields = ['code', 'created_at']
+
+    def code(self, instance):
+        return instance.sms.code
+
+    def created_at(self, instance):
+        return instance.sms.created_at
+
+    code.short_description = 'code'
+    created_at.short_description = 'created_at'
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+######################
+######################
+
+
+class MyUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone', 'usertype', 'email')}),
@@ -27,6 +52,8 @@ class MyUserAdmin(admin.ModelAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     list_display = ('username', 'phone', 'first_name', 'last_name', 'is_staff')
+    list_display_links = ('username', 'phone',)
+    inlines = UserAdmin.inlines + [SmsInlineAdmin, ]
 
 ######################
 ######################
@@ -34,3 +61,4 @@ class MyUserAdmin(admin.ModelAdmin):
 
 admin.site.register(Address, AddressAdmin)
 admin.site.register(User, MyUserAdmin)
+admin.site.register(Sms)

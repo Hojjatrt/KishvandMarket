@@ -113,7 +113,7 @@ class SmsCodeManager(models.Manager):
 
 
 class AbstractBaseSmsCode(models.Model):
-    users = models.ManyToManyField(User, verbose_name=_('User'), null=True, blank=True)
+    users = models.ManyToManyField(User, verbose_name=_('User'))
     code = models.CharField(_('Code'), max_length=6, null=True, blank=True)
     created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True, blank=True, null=True)
 
@@ -127,7 +127,7 @@ class AbstractBaseSmsCode(models.Model):
         #     'code': self.code,
         #     'type': type,
         # }
-        data = "کد فعالسازی کیشوند مارکت {}".format(self.code)
+        data = "کد فعالسازی کیشوند مارکت: {}".format(self.code)
         return send_multi_format_sms(data, target_phone=self.users.first().phone)
 
     def __str__(self):

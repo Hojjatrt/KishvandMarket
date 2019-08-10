@@ -1,6 +1,6 @@
 from http.client import HTTPException
 from random import randint
-
+from kavenegar import *
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -72,39 +72,30 @@ class Massage(models.Model):
 #########################
 
 
-################################
-################################
-
-
-def send_multi_format_sms(template_prefix, data, target_phone):
-    # subject_file = 'user/%s_subject.txt' % template_prefix
-    # txt_file = 'user/%s.txt' % template_prefix
-    # html_file = 'user/%s.html' % template_prefix
-
+def send_multi_format_sms(data, target_phone=''):
     try:
         api = KavenegarAPI('6538764672635A4C4C48346234417A75414D30476371635152372B5A585737344239346A645A564D3348773D')
         params = {
-            'receptor': target_phone,
-            'template': template_prefix,
-            'token': data['code'],
-            'type': data['type'],  # sms vs call
+            'sender': '',  # optional
+            'receptor': str(target_phone),  # multiple mobile number, split by comma
+            'message': data,
         }
-        response = api.verify_lookup(params)
+        response = api.sms_send(params)
         print(response)
-        # if response['return']['status'] == 200:
-        return response
+        return True
     except APIException as e:
         print(e)
-        return None
     except HTTPException as e:
         print(e)
-        return None
+    return False
 
 
 class SmsCodeManager(models.Manager):
-    def create_sms_code(self, user, ipaddr):
+    def create_sms_code(self, users, ipaddr):
         code = _generate_sms_code()
-        _sms_code = self.create(user=user, code=code, ipaddr=ipaddr)
+        _sms_code = self.create(code=code, ipaddr=ipaddr)
+        _sms_code.users.add(users)
+        _sms_code.save()
 
         return _sms_code
 
@@ -129,14 +120,15 @@ class AbstractBaseSmsCode(models.Model):
     class Meta:
         abstract = True
 
-    def send_sms(self, prefix, type='sms'):
-        data = {
-            'username': self.users.username,
-            'phone': self.users.phone,
-            'code': self.code,
-            'type': type,
-        }
-        return send_multi_format_sms(prefix, data, target_phone=self.users.phone)
+    def send_sms(self, prefix='', type='sms'):
+        # data = {
+        #     'username': self.users.username,
+        #     'phone': self.users.phone,
+        #     'code': self.code,
+        #     'type': type,
+        # }
+        data = "کد فعالسازی کیشوند مارکت {}".format(self.code)
+        return send_multi_format_sms(data, target_phone=self.users.first().phone)
 
     def __str__(self):
         return str(self.code)
@@ -154,14 +146,15 @@ class Sms(AbstractBaseSmsCode):
         prefix = 'verify'
         check = self.send_sms(prefix)
         print(check)
-        if check is None:
-            self.status = 0
-            self.save()
-            return 0
-        else:
-            self.status = 1
-            self.save()
-            return self.status
+        # if check is None:
+        #     self.status = 0
+        #     self.save()
+        #     return 0
+        # else:
+        #     self.status = 1
+        #     self.save()
+        #     return self.status
+        return check
 
     def send_signup_call(self):
         prefix = 'verify'

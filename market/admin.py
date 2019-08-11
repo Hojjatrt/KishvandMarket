@@ -92,9 +92,16 @@ class BaseInfoAdmin(admin.ModelAdmin):
 ######################
 ######################
 
+
 class DiscountAdmin(admin.ModelAdmin):
     list_display = ('code', 'percent')
 
+######################
+######################
+
+
+class TimeAdmin(admin.ModelAdmin):
+    form = TimeAdminForm
 
 ######################
 ######################
@@ -107,5 +114,5 @@ admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Baseinfo, BaseInfoAdmin)
 admin.site.register(Cart)
-admin.site.register(Time)
+admin.site.register(Time, TimeAdmin)
 admin.site.register(Discount, DiscountAdmin)

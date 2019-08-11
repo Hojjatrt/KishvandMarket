@@ -88,6 +88,14 @@ class BaseInfoAdmin(admin.ModelAdmin):
     list_filter = ('parent',)
     list_display_links = ('value',)
 
+
+######################
+######################
+
+class DiscountAdmin(admin.ModelAdmin):
+    list_display = ('code', 'percent')
+
+
 ######################
 ######################
 
@@ -98,4 +106,6 @@ admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Baseinfo, BaseInfoAdmin)
-
+admin.site.register(Cart)
+admin.site.register(Time)
+admin.site.register(Discount, DiscountAdmin)

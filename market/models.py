@@ -8,7 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from market.fields import *
 import jsonfield
 from sorl.thumbnail import ImageField
-
+from userapp.models import Address
+from django_jalali.db import models as jmodels
 # Create your models here.
 
 #########################
@@ -195,3 +196,58 @@ class Image(models.Model):
 
     def __str__(self):
         return self.image.name
+
+
+#########################
+#########################
+
+
+class Discount(models.Model):
+    code = models.CharField(_('Code'), max_length=20)
+    percent = models.PositiveSmallIntegerField(_('Percent'), default=0)
+    name = models.CharField(_('Name'), max_length=30)
+
+    def __str__(self):
+        return self.code
+
+
+#########################
+#########################
+
+
+class Time(models.Model):
+    time = models.CharField(_('Time'), max_length=15)
+
+    def __str__(self):
+        return self.time
+
+
+#########################
+#########################
+
+
+class Cart(models.Model):
+    STATUS_CHOICES = (
+        (0, _('Doing')),
+        (1, _('Unpaid')),
+        (2, _('Paid')),
+        (3, _('Sending')),
+        (4, _('Done')),
+    )
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Customer'),
+                                 on_delete=models.CASCADE)
+    product = models.ManyToManyField(Product, verbose_name=_('Product'))
+    discount = models.ForeignKey(Discount, verbose_name=_('Discount'), on_delete=models.CASCADE,
+                                 null=True, blank=True)
+    address = models.ForeignKey(Address, verbose_name=_('Address'), on_delete=models.CASCADE)
+    time = models.ForeignKey(Time, verbose_name=_('Time'), on_delete=models.CASCADE)
+    date = jmodels.jDateField(_('Date'))
+    created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True)
+    status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=0)
+    amount = models.PositiveIntegerField(_('Amount'), default=0)
+
+    def __str__(self):
+        return str(self.customer) + str(self.amount)
+
+#########################
+#########################

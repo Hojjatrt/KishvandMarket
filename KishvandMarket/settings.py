@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'django_jalali',
     'market.apps.MarketConfig',
     'userapp.apps.UserappConfig',
     'sorl.thumbnail',

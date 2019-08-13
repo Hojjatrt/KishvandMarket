@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.admin import widgets
 from .models import *
 from django.utils.translation import ugettext_lazy as _
+from django_jalali.admin.widgets import AdminjDateWidget
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -22,6 +23,19 @@ class CategoryAdminForm(forms.ModelForm):
     class Meta:
         model = Category
         exclude = ('param',)
+
+#######################
+#######################
+
+
+class CartAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Cart
+        fields = '__all__'
+        widgets = {
+            'date': AdminjDateWidget
+        }
 
 #######################
 #######################

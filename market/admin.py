@@ -88,6 +88,13 @@ class BaseInfoAdmin(admin.ModelAdmin):
     list_filter = ('parent',)
     list_display_links = ('value',)
 
+######################
+######################
+
+
+class CartAdmin(admin.ModelAdmin):
+    list_filter = ('status',)
+    form = CartAdminForm
 
 ######################
 ######################
@@ -113,6 +120,6 @@ admin.site.register(Tag)
 admin.site.register(Stock, StockAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Baseinfo, BaseInfoAdmin)
-admin.site.register(Cart)
+admin.site.register(Cart, CartAdmin)
 admin.site.register(Time, TimeAdmin)
 admin.site.register(Discount, DiscountAdmin)

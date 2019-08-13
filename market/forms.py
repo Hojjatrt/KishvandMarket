@@ -1,6 +1,8 @@
 from dal import autocomplete
 from django import forms
+from django.contrib.admin import widgets
 from .models import *
+from django.utils.translation import ugettext_lazy as _
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -26,23 +28,22 @@ class CategoryAdminForm(forms.ModelForm):
 
 
 class TimeAdminForm(forms.ModelForm):
-    start = forms.TimeField(required=True)
-    end = forms.TimeField(required=True)
-    time = forms.CharField(required=False)
+    start = forms.TimeField(required=True, widget=widgets.AdminTimeWidget(format="%H:%M"))
+    end = forms.TimeField(required=True, widget=widgets.AdminTimeWidget(format="%H:%M"))
+    time = forms.CharField(required=False, widget=forms.HiddenInput())
 
-    def save(self, commit=True):
-        f = super(TimeAdminForm, self).save(commit=False)
-        print(f)
-        if commit:
-            print(f)
-            self.instance.time = str(self.cleaned_data['start']) + ' - ' + str(self.cleaned_data['end'])
-            f.save()
-        return f
+    def clean(self):
+        cleaned_data = super(TimeAdminForm, self).clean()
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
+        if end <= start:
+            msg = _('End time should not occur before start time.')
+            self._errors['end'] = self.error_class([msg])
+            del cleaned_data['end']
+        elif start and end:
+            cleaned_data['time'] = start.strftime("%H:%M") + ' - ' + end.strftime("%H:%M")
+        return cleaned_data
 
     class Meta:
         model = Time
         fields = '__all__'
-        widgets = {
-            'start': forms.TimeInput,
-            'end': forms.TimeInput,
-        }

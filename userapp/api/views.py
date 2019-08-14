@@ -3,11 +3,13 @@ import os
 import jdatetime
 from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from userapp.api.serializers import *
 from userapp.models import *
+from userapp.api.permissions import *
 from rest_framework.authtoken.models import Token
 
 
@@ -154,4 +156,47 @@ class Login(APIView):
 
 ############################
 ############################
+
+
+class UserUpdate(APIView):
+    permission_classes = IsClient
+    authentication_classes = TokenAuthentication
+    serializer_class = UserUpdateSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+            if user.is_anonymous:
+                content = {'code': 1, 'detail': 'User is anonymous in user update'}
+                return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+
+            first_name = serializer.validated_data.get('first_name', '')
+            last_name = serializer.validated_data.get('last_name', '')
+            email = serializer.validated_data.get('email', '')
+            temp = 0
+
+            if first_name != '':
+                user.first_name = first_name
+                temp = 1
+
+            if last_name != '':
+                user.last_name = last_name
+                temp = 1
+
+            if email != '':
+                user.email = email
+                temp = 1
+
+            if temp == 1:
+                user.save()
+
+            content = {'code': 0, 'first_name': user.first_name,
+                       'last_name': user.last_name, 'email': user.email},
+            return Response(content, status=status.HTTP_200_OK)
+
+        else:
+            content = {'code': 2, 'detail': 'error in user update api'}
+            return Response(content, status=status.HTTP_200_OK)
 

@@ -251,3 +251,28 @@ class Cart(models.Model):
 
 #########################
 #########################
+
+
+class ExcludeDate(models.Model):
+    DAY_CHOICES = (
+        (0, _('Saturday')),
+        (1, _('Sunday')),
+        (2, _('Monday')),
+        (3, _('Thursday')),
+        (4, _('Wednesday')),
+        (5, _('Thursday')),
+        (6, _('Friday')),
+    )
+    date = jmodels.jDateField(_('Date'), null=True, blank=True)
+    times = models.ManyToManyField(Time, verbose_name=_('Times'))
+    day = models.PositiveSmallIntegerField(_('Day'), choices=DAY_CHOICES, null=True, blank=True)
+
+    def __str__(self):
+        if self.date:
+            return str(self.date)
+        else:
+            return str(self.DAY_CHOICES[self.day][1])
+
+    class Meta:
+        verbose_name = _("ExcludeDate")
+        verbose_name_plural = _("ExcludeDates")

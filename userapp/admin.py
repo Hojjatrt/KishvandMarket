@@ -18,19 +18,12 @@ class AddressAdmin(admin.ModelAdmin):
 
 
 class SmsInlineAdmin(admin.TabularInline):
-    model = Sms.users.through
+    model = VerifyCode
     extra = 0
     fields = ['code', 'created_at']
     readonly_fields = ['code', 'created_at']
 
-    def code(self, instance):
-        return instance.sms.code
 
-    def created_at(self, instance):
-        return instance.sms.created_at
-
-    code.short_description = 'code'
-    created_at.short_description = 'created_at'
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -61,4 +54,5 @@ class MyUserAdmin(UserAdmin):
 
 admin.site.register(Address, AddressAdmin)
 admin.site.register(User, MyUserAdmin)
-admin.site.register(Sms)
+admin.site.register(VerifyCode)
+admin.site.register(Massage)

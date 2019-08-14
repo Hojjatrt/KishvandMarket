@@ -103,19 +103,19 @@ class SmsCodeManager(models.Manager):
 
     def set_user_is_verified(self, code, user):
         try:
-            signup_code = Sms.objects.get(user=user, code=code)
+            signup_code = VerifyCode.objects.get(user=user, code=code)
             signup_code.user.is_active = True
             signup_code.user.save()
             signup_code.delete()
             return True
-        except Sms.DoesNotExist:
+        except VerifyCode.DoesNotExist:
             pass
 
         return False
 
 
 class AbstractBaseSmsCode(models.Model):
-    users = models.ManyToManyField(User, verbose_name=_('User'))
+    users = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     code = models.CharField(_('Code'), max_length=6, null=True, blank=True)
     created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True, blank=True, null=True)
 
@@ -136,9 +136,7 @@ class AbstractBaseSmsCode(models.Model):
         return str(self.code)
 
 
-class Sms(AbstractBaseSmsCode):
-    massage = models.ForeignKey(Massage, verbose_name=_('Massage'), null=True, blank=True,
-                                on_delete=models.DO_NOTHING)
+class VerifyCode(AbstractBaseSmsCode):
     ipaddr = models.CharField(_('ip Address'), max_length=20, null=True, blank=True)
     # status = models.PositiveSmallIntegerField(_('Status'), null=True, blank=True)
 
@@ -178,8 +176,8 @@ class Sms(AbstractBaseSmsCode):
             return self.massage.name
 
     class Meta:
-        verbose_name = _("Sms")
-        verbose_name_plural = _("Smses")
+        verbose_name = _("VerifyCode")
+        verbose_name_plural = _("VerifyCodes")
 
 #########################
 #########################

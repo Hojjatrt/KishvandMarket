@@ -93,10 +93,9 @@ def send_multi_format_sms(data, target_phone=''):
 
 
 class SmsCodeManager(models.Manager):
-    def create_sms_code(self, users, ipaddr):
+    def create_sms_code(self, user, ipaddr):
         code = _generate_sms_code()
-        _sms_code = self.create(code=code, ipaddr=ipaddr)
-        _sms_code.users.add(users)
+        _sms_code = self.create(code=code, ipaddr=ipaddr, user=user)
         _sms_code.save()
 
         return _sms_code
@@ -115,7 +114,7 @@ class SmsCodeManager(models.Manager):
 
 
 class AbstractBaseSmsCode(models.Model):
-    users = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     code = models.CharField(_('Code'), max_length=6, null=True, blank=True)
     created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True, blank=True, null=True)
 
@@ -130,7 +129,7 @@ class AbstractBaseSmsCode(models.Model):
         #     'type': type,
         # }
         data = "کد فعالسازی کیشوند مارکت: {}".format(self.code)
-        return send_multi_format_sms(data, target_phone=self.users.first().phone)
+        return send_multi_format_sms(data, target_phone=self.user.phone)
 
     def __str__(self):
         return str(self.code)
@@ -170,14 +169,11 @@ class VerifyCode(AbstractBaseSmsCode):
             return self.status
 
     def __str__(self):
-        if self.code:
-            return self.code
-        else:
-            return self.massage.name
+        return self.code
 
     class Meta:
-        verbose_name = _("VerifyCode")
-        verbose_name_plural = _("VerifyCodes")
+        verbose_name = _("Verify Code")
+        verbose_name_plural = _("Verify Codes")
 
 #########################
 #########################

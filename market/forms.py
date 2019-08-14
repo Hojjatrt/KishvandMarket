@@ -15,6 +15,9 @@ class ProductAdminForm(forms.ModelForm):
             'tags': autocomplete.ModelSelect2Multiple(url='tag-autocomplete')
         }
 
+#######################
+#######################
+
 
 class CategoryAdminForm(forms.ModelForm):
     para = forms.CharField(max_length=50, required=True)

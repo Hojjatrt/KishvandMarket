@@ -237,10 +237,10 @@ class Cart(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Customer'),
                                  on_delete=models.CASCADE)
     product = models.ManyToManyField(Product, verbose_name=_('Product'))
-    discount = models.ForeignKey(Discount, verbose_name=_('Discount'), on_delete=models.CASCADE,
+    discount = models.ForeignKey(Discount, verbose_name=_('Discount'), on_delete=models.DO_NOTHING,
                                  null=True, blank=True)
-    address = models.ForeignKey(Address, verbose_name=_('Address'), on_delete=models.CASCADE)
-    time = models.ForeignKey(Time, verbose_name=_('Time'), on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, verbose_name=_('Address'), on_delete=models.DO_NOTHING)
+    time = models.ForeignKey(Time, verbose_name=_('Time'), on_delete=models.DO_NOTHING)
     date = jmodels.jDateField(_('Date'))
     created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=0)

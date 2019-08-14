@@ -130,3 +130,11 @@ class ProductDetailSerializer(ModelSerializer):
                 "discount": stock.discount_ratio,
             })
         return data
+
+##################
+##################
+# TODO Cart serializer and address serializer is here
+
+
+##################
+##################

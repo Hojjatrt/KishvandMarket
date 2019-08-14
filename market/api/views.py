@@ -1,11 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from rest_framework import generics, status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import SearchFilter
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
-
+from rest_framework.views import APIView
 from market.models import *
 from .serializers import *
 
@@ -22,7 +23,6 @@ class ProductFilter(filters.FilterSet):
         fields = ['categories', 'min_price', 'max_price']
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all().order_by('id')  # Q(status = 1) | Q(status = 3))
     serializer_class = ProductListSerializer
@@ -36,12 +36,10 @@ class ProductListAPIView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         li = self.list(request, *args, **kwargs)
-        res = Response(li.data, status=status.HTTP_200_OK)
-        res['Access-Control-Allow-Origin'] = '*'
-        return res
+        return Response(li.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductDetailSerializer
@@ -49,15 +47,13 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         ret = self.retrieve(request, *args, **kwargs)
-        res = Response(ret.data, status=status.HTTP_200_OK)
-        res['Access-Control-Allow-Origin'] = '*'
-        return res
+        return Response(ret.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
 
 ##################
 ##################
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class MainCategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.filter(parent__isnull=True)
     # authentication_classes = (TokenAuthentication,)
@@ -66,12 +62,10 @@ class MainCategoryListAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        res = Response(serializer.data, status=status.HTTP_200_OK)
-        res['Access-Control-Allow-Origin'] = '*'
-        return res
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class SubCategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.filter(parent__isnull=False)
     # authentication_classes = (TokenAuthentication,)
@@ -80,15 +74,13 @@ class SubCategoryListAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        res = Response(serializer.data, status=status.HTTP_200_OK)
-        res['Access-Control-Allow-Origin'] = '*'
-        return res
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
 
-##################
-##################
+##########################
+##########################
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class TagListAPIView(generics.ListAPIView):
     queryset = Tag.objects.all().order_by('id')
     # authentication_classes = (TokenAuthentication,)
@@ -97,6 +89,32 @@ class TagListAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        res = Response(serializer.data, status=status.HTTP_200_OK)
-        res['Access-Control-Allow-Origin'] = '*'
-        return res
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
+
+##########################
+##########################
+# TODO Time api view is here
+
+
+##########################
+##########################
+# TODO Address api view is here
+
+
+##########################
+##########################
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CartAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = TagListSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
+
+##########################
+##########################

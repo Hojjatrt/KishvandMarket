@@ -288,13 +288,32 @@ class ExcludeDate(models.Model):
 
 class Slide(models.Model):
     name = models.CharField(_('Name'), max_length=30)
-    image = ImageField(_('Image'), upload_to=PathAndRename('prod/'),
-                       null=True, blank=True)
+    image = ImageField(_('Image'), upload_to=PathAndRename('slides/'))
     link = models.URLField(
         _("Link"),
         max_length=128,
         blank=True
     )
+
+    def __init__(self, *args, **kwargs):
+        super(Slide, self).__init__(*args, **kwargs)
+        self.__original_pic = self.image.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None, *args, **kwargs):
+
+        if (self.image and self.pk is None) or self.__original_pic != self.image.name:
+            self.image = resize(low_pic=self.image, high_pic=self.image, size=(300, 300))[0]
+
+        super(Slide, self).save(force_insert, force_update, *args, **kwargs)
+        self.__original_pic = self.image.name
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Slide")
+        verbose_name_plural = _("Slides")
 
 #########################
 #########################

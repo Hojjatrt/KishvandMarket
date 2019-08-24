@@ -241,7 +241,7 @@ class Cart(models.Model):
     )
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Customer'),
                                  on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product, verbose_name=_('Product'))
+    products = models.ManyToManyField(Product, verbose_name=_('Products'), through='CartProduct')
     discount = models.ForeignKey(Discount, verbose_name=_('Discount'), on_delete=models.DO_NOTHING,
                                  null=True, blank=True)
     address = models.ForeignKey(Address, verbose_name=_('Address'), on_delete=models.DO_NOTHING)
@@ -253,6 +253,15 @@ class Cart(models.Model):
 
     def __str__(self):
         return str(self.customer) + str(self.amount)
+
+
+class CartProduct(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, verbose_name=_('Cart'), on_delete=models.CASCADE)
+    number = models.PositiveSmallIntegerField(_('Number of Products'))
+
+    def __str__(self):
+        return str(self.product) + ' with ' + str(self.number) + ' no.'
 
 #########################
 #########################

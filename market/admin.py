@@ -92,9 +92,16 @@ class BaseInfoAdmin(admin.ModelAdmin):
 ######################
 
 
+class ProductCart_inline(admin.TabularInline):
+    model = CartProduct
+    form = CartProductAdminForm
+    extra = 0
+
+
 class CartAdmin(admin.ModelAdmin):
     list_filter = ('status',)
-    form = CartAdminForm
+    inlines = [ProductCart_inline, ]
+    readonly_fields = ('created_at',)
 
 ######################
 ######################

@@ -64,3 +64,18 @@ class TimeAdminForm(forms.ModelForm):
     class Meta:
         model = Time
         fields = '__all__'
+
+#######################
+#######################
+
+
+class CartProductAdminForm(forms.ModelForm):
+    class Meta:
+        model = CartProduct
+        fields = '__all__'
+        widgets = {
+            'product': autocomplete.ModelSelect2(url='product-autocomplete'),
+        }
+
+#######################
+#######################

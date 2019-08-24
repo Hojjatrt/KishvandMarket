@@ -13,4 +13,8 @@ urlpatterns = [
          TagAutocomplete.as_view(),
          name='tag-autocomplete',
          ),
+    path('product-autocomplete/',
+         ProductAutocomplete.as_view(),
+         name='product-autocomplete',
+         ),
 ]

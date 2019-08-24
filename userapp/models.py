@@ -42,6 +42,7 @@ class User(AbstractUser):
 class Address(models.Model):
     lat = models.CharField(_('Lat'), max_length=15)
     lng = models.CharField(_('Lng'), max_length=15)
+    name = models.CharField(_('Name'), max_length=20)
     addr = models.TextField(_('Address'), max_length=300)
     phone = models.CharField(_('Phone number'), max_length=11)
     zip_code = models.CharField(_('ZipCode'), max_length=10)

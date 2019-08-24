@@ -281,3 +281,20 @@ class ExcludeDate(models.Model):
     class Meta:
         verbose_name = _("ExcludeDate")
         verbose_name_plural = _("ExcludeDates")
+
+
+#########################
+#########################
+
+class Slide(models.Model):
+    name = models.CharField(_('Name'), max_length=30)
+    image = ImageField(_('Image'), upload_to=PathAndRename('prod/'),
+                       null=True, blank=True)
+    link = models.URLField(
+        _("Link"),
+        max_length=128,
+        blank=True
+    )
+
+#########################
+#########################

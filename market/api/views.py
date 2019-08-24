@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from rest_framework import generics, status
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from market.models import *
 from .serializers import *
+import jdatetime
 
 
 ##################
@@ -94,11 +96,35 @@ class TagListAPIView(generics.ListAPIView):
 
 ##########################
 ##########################
-# TODO Time api view is here
+
+
 class TimeListAPIView(generics.ListAPIView):
-    queryset = Time.objects.all().order_by('id')
     # authentication_classes = (TokenAuthentication,)
     serializer_class = TimeListSerializer
+
+    def get_queryset(self):
+        day = self.kwargs.get('day', '')
+        now = jdatetime.datetime.now()
+        now_t = now.time()
+        now_d = now.date()
+        if day == 'tomorrow':
+            now_d = now_d + jdatetime.timedelta(days=1)
+            now_t = jdatetime.time(5, 0)
+        timefilter = ExcludeDate.objects.filter(Q(date=now_d) | Q(day=now_d.weekday()))
+        timeservices = Time.objects.all().exclude(
+            excludedate__in=timefilter
+        )
+        for t in timeservices:
+            if t.strparse.hour <= now_t.hour:
+                if t.strparse.hour == now_t.hour:
+                    minutes = t.strparse.minute - now_t.minute
+                    if minutes < 0:
+                        minutes = minutes * -1
+                    if minutes > 15:
+                        timeservices = timeservices.exclude(pk=t.pk)
+                else:
+                    timeservices = timeservices.exclude(pk=t.pk)
+        return timeservices.order_by('id')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -123,6 +149,7 @@ class AddressListAPIView(generics.ListAPIView):
 
 ##########################
 ##########################
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CartAPIView(APIView):

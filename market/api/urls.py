@@ -9,7 +9,7 @@ urlpatterns = [
     path('products/<int:id>/', ProductDetailAPIView.as_view(), name='Product'),
     path('maincategories/', MainCategoryListAPIView.as_view(), name='maincategories'),
     path('subcategories/', SubCategoryListAPIView.as_view(), name='subcategories'),
-    path('time/', TimeListAPIView.as_view(), name='time'),
+    path('times/', TimeListAPIView.as_view(), name='time services'),
+    path('times/<str:day>/', TimeListAPIView.as_view(), name='time services'),
     path('address/', AddressListAPIView.as_view(), name='Address'),
-
 ]

@@ -10,6 +10,7 @@ import jsonfield
 from sorl.thumbnail import ImageField
 from userapp.models import Address
 from django_jalali.db import models as jmodels
+import jdatetime
 # Create your models here.
 
 #########################
@@ -218,9 +219,13 @@ class Discount(models.Model):
 class Time(models.Model):
     time = models.CharField(_('Time'), max_length=15)
 
+    @property
+    def strparse(self):
+        start = jdatetime.datetime.strptime(self.time.split(' - ')[0], '%H:%M').time()
+        return start
+
     def __str__(self):
         return self.time
-
 
 #########################
 #########################
@@ -258,7 +263,7 @@ class ExcludeDate(models.Model):
         (0, _('Saturday')),
         (1, _('Sunday')),
         (2, _('Monday')),
-        (3, _('Thursday')),
+        (3, _('Tuesday')),
         (4, _('Wednesday')),
         (5, _('Thursday')),
         (6, _('Friday')),

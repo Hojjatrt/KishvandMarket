@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'django_jalali',
+    'leaflet',
+    'djgeojson',
     'market.apps.MarketConfig',
     'userapp.apps.UserappConfig',
     'sorl.thumbnail',
@@ -112,7 +114,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
-
+LEAFLET_CONFIG = {
+    # 'SPATIAL_EXTENT': (5.0, 44.0, 7.5, 46)
+}
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 

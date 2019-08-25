@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from leaflet.admin import LeafletGeoAdmin
 from userapp.models import *
 from django.utils.translation import ugettext_lazy as _
 # Register your models here.
@@ -8,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 ######################
 
 
-class AddressAdmin(admin.ModelAdmin):
+class AddressAdmin(LeafletGeoAdmin):
     list_display = ('addr', 'user')
     list_filter = ('user',)
     list_display_links = ('addr',)

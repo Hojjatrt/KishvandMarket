@@ -312,7 +312,7 @@ class Slide(models.Model):
              update_fields=None, *args, **kwargs):
 
         if (self.image and self.pk is None) or self.__original_pic != self.image.name:
-            self.image = resize(low_pic=self.image, high_pic=self.image, size=(300, 300))[0]
+            self.image = resize(low_pic=self.image, high_pic=self.image, size=(1000, 800))[0]
 
         super(Slide, self).save(force_insert, force_update, *args, **kwargs)
         self.__original_pic = self.image.name

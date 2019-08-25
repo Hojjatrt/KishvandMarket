@@ -141,7 +141,21 @@ class AddressListSerializer(ModelSerializer):
 
 ##################
 ##################
+
+
 class TimeListSerializer(ModelSerializer):
     class Meta:
         model = Time
         fields = '__all__'
+
+##################
+##################
+
+
+class SlideListSerializer(ModelSerializer):
+    class Meta:
+        model = Slide
+        fields = '__all__'
+
+##################
+##################

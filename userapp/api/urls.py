@@ -8,4 +8,6 @@ urlpatterns = [
     path('verify/', Verify.as_view(), name='verify_api'),
     path('login/', Login.as_view(), name='login_api'),
     path('update-user/', UserUpdate.as_view(), name='update_user_api'),
+    path('address-list/', AddressListAPIView.as_view(), name='Address list'),
+    path('address/', AddressApiView.as_view(), name='Address'),
 ]

@@ -2,9 +2,9 @@ import binascii
 import os
 import jdatetime
 from django.contrib.auth import get_user_model
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from userapp.api.serializers import *
@@ -142,7 +142,7 @@ class Login(APIView):
                 user = get_user_model().objects.get(phone=phone)
                 if user.is_active:
                     token, created = Token.objects.get_or_create(user=user)
-                    return Response({'code': 0, 'token': token.key, 'fname': user.first_name,
+                    return Response({'code': 0, 'id': user.id, 'token': token.key, 'fname': user.first_name,
                                      'lname': user.last_name, 'email': user.email},
                                     status=status.HTTP_200_OK)
                 else:
@@ -200,3 +200,91 @@ class UserUpdate(APIView):
             content = {'code': 2, 'detail': 'error in user update api'}
             return Response(content, status=status.HTTP_200_OK)
 
+############################
+############################
+
+
+class AddressApiView(APIView):
+    # permission_classes = (IsClient,)
+    serializer_class = AddressSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = request.user
+                if user.is_anonymous:
+                    content = {'code': 1, 'detail': 'user is anonymous.'}
+                    return Response(content, status=status.HTTP_200_OK)
+
+                id = serializer.data.get('id', '')
+                if id:
+                    try:
+                        add = Address.objects.get(id=id, user=user, status=1)
+                        add.status = 0
+                        add.save()
+                        content = {'code': 0, 'detail': 'Address deleted.'}
+                        return Response(content, status=status.HTTP_202_ACCEPTED)
+                    except Address.DoesNotExist:
+                        content = {'code': 3, 'detail': 'Address Does not exist in deleting address.'}
+                        return Response(content, status=status.HTTP_200_OK)
+                else:
+                    lat = serializer.data.get('lat', None)
+                    lng = serializer.data.get('lng', None)
+                    if lat is not None and lng is not None:
+                        lat = float(lat)
+                        lng = float(lng)
+                        location = {'type': 'Point', 'coordinates': [lng, lat]}
+                    else:
+                        location = None
+                    address = serializer.data.get('address', '')
+                    phone = serializer.data.get('phone', None)
+                    name = serializer.data.get('name', None)
+                    zipcode = serializer.data.get('zipcode', None)
+            except:
+                content = {'code': 2, 'detail': 'error ecurred in address create.'}
+                return Response(content, status=status.HTTP_200_OK)
+
+            if user and location and address:
+                try:
+                    add = Address.objects.update_or_create(user=user, phone=phone, zipcode=zipcode,
+                                                           location=location, address=address, name=name)
+
+                    content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
+                               'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
+                    return Response(content, status=status.HTTP_201_CREATED,
+                                    headers={'Access-Control-Allow-Origin': '*'})
+                except:
+                    content = {'code': 2, 'detail': 'error ecurred in address create.'}
+                    return Response(content, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_200_OK)
+
+
+class AddressListAPIView(generics.ListAPIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = AddressListSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        try:
+            user = self.request.user
+            if user:
+                addresses = Address.objects.filter(user=user)
+                return addresses
+            else:
+                content = {'code': 0, 'detail': 'User Does not exist in List address.'}
+                return Response(content, status=status.HTTP_200_OK)
+        except:
+            content = {'code': 1, 'detail': 'error in address list'}
+            return Response(content, status=status.HTTP_200_OK)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
+
+############################
+############################

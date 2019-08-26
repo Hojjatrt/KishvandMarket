@@ -41,16 +41,23 @@ class User(AbstractUser):
 
 
 class Address(models.Model):
-    name = models.CharField(_('Name'), max_length=20, null=True)
-    point = PointField(_('Location'))
+    STATUS_CHOICES = (
+        (1, _('Active')),
+        (0, _('DeActive')),
+    )
+    name = models.CharField(_('Name'), max_length=20)
+    location = PointField(_('Location'))
     addr = models.TextField(_('Address'), max_length=300)
     phone = models.CharField(_('Phone number'), max_length=11)
     zip_code = models.CharField(_('ZipCode'), max_length=10)
+    status = models.PositiveSmallIntegerField(_('Status'), default=1, choices=STATUS_CHOICES,
+                                              help_text=_("Status of Address"))
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'), null=True, blank=True,
                              on_delete=models.CASCADE)
+    created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True, null=True)
 
     def __str__(self):
-        return self.addr[:20] + '...'
+        return self.name + ': ' + str(self.addr[:15]) + '...'
 
     class Meta:
         verbose_name = _("Address")

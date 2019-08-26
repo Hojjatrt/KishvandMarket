@@ -133,14 +133,6 @@ class ProductDetailSerializer(ModelSerializer):
 
 ##################
 ##################
-# TODO Cart serializer and address serializer is here
-class AddressListSerializer(ModelSerializer):
-    class Meta:
-        model = Address
-        fields = '__all__'
-
-##################
-##################
 
 
 class TimeListSerializer(ModelSerializer):

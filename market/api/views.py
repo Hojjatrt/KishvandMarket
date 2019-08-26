@@ -132,21 +132,6 @@ class TimeListAPIView(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK,
                         headers={'Access-Control-Allow-Origin': '*'})
 
-
-##########################
-##########################
-# TODO Address api view is here
-class AddressListAPIView(generics.ListAPIView):
-    queryset = Address.objects.all().order_by('id')
-    # authentication_classes = (TokenAuthentication,)
-    serializer_class = AddressListSerializer
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK,
-                        headers={'Access-Control-Allow-Origin': '*'})
-
 ##########################
 ##########################
 

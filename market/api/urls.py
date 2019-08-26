@@ -11,7 +11,6 @@ urlpatterns = [
     path('subcategories/', SubCategoryListAPIView.as_view(), name='subcategories'),
     path('times/', TimeListAPIView.as_view(), name='time services'),
     path('times/<str:day>/', TimeListAPIView.as_view(), name='time services'),
-    path('address/', AddressListAPIView.as_view(), name='Address'),
     path('slides/', SlideAPIView.as_view(), name='Slides'),
 
 ]

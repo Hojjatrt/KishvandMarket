@@ -10,9 +10,12 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class AddressAdmin(LeafletGeoAdmin):
-    list_display = ('addr', 'user')
+    list_display = ('name', 'address', 'user')
     list_filter = ('user',)
-    list_display_links = ('addr',)
+    list_display_links = ('name', 'address',)
+
+    def address(self, obj):
+        return obj.addr[:25] + '...'
 
 ######################
 ######################
@@ -23,8 +26,6 @@ class SmsInlineAdmin(admin.TabularInline):
     extra = 0
     fields = ['code', 'created_at']
     readonly_fields = ['code', 'created_at']
-
-
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -32,6 +32,21 @@ class PathAndRename(object):  # for path and rename a picture
 #########################
 
 
+class Parameters(models.Model):
+    key = models.CharField(_('Key'), max_length=30)
+    value = models.CharField(_('Value'), max_length=30)
+
+    def __str__(self):
+        return str(self.key) + '     ...    ' + str(self.value)
+
+    class Meta:
+        verbose_name = _("Parameter")
+        verbose_name_plural = _("Parameters")
+
+
+#########################
+#########################
+
 class Category(models.Model):
     title = models.CharField(_('Title'), max_length=50)
     parent = models.ForeignKey('self', verbose_name=_('Parent Category'), null=True, blank=True,
@@ -40,7 +55,7 @@ class Category(models.Model):
                                   upload_to=PathAndRename('Cat/t/{}'.format(time.strftime("%Y/%m/%d"))),
                                   null=True, blank=True)
     order = models.PositiveSmallIntegerField(_('Order'), default=0)
-    param = jsonfield.JSONField(_('Parameters'), max_length=300)
+    param = models.ManyToManyField(Parameters, verbose_name=_('Parameters'))
 
     def __init__(self, *args, **kwargs):
         super(Category, self).__init__(*args, **kwargs)

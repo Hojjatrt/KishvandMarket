@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 from .forms import *
 from sorl.thumbnail.admin import AdminImageMixin
-
+import django_jalali.admin as jadmin
 
 # Register your models here.
 ######################
@@ -108,6 +108,10 @@ class CartAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     inlines = [ProductCart_inline, ]
     readonly_fields = ('created_at',)
+    # form = CartAdminForm
+    widgets = {
+        'date': jadmin.widgets.AdminjDateWidget
+    }
 
 ######################
 ######################

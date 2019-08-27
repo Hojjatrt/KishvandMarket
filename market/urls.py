@@ -17,4 +17,8 @@ urlpatterns = [
          ProductAutocomplete.as_view(),
          name='product-autocomplete',
          ),
+    path('parameter-autocomplete/',
+         ParameterAutocomplete.as_view(),
+         name='parameter-autocomplete',
+         ),
 ]

@@ -6,6 +6,15 @@ from django.utils.translation import ugettext_lazy as _
 from django_jalali.admin.widgets import AdminjDateWidget
 
 
+class ParameterValueAdminForm(forms.ModelForm):
+    class Meta:
+        model = ParameterValue
+        fields = '__all__'
+        widgets = {
+            'parameter': autocomplete.ModelSelect2(url='parameter-autocomplete')
+        }
+
+
 class ProductAdminForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -20,12 +29,13 @@ class ProductAdminForm(forms.ModelForm):
 
 
 class CategoryAdminForm(forms.ModelForm):
-    para = forms.CharField(max_length=50, required=True)
-    value = forms.CharField(max_length=50, required=True)
-
     class Meta:
         model = Category
-        exclude = ('param',)
+        # exclude = ('param',)
+        fields = '__all__'
+        widgets = {
+            'param': autocomplete.ModelSelect2Multiple(url='parameter-autocomplete')
+        }
 
 #######################
 #######################

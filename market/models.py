@@ -34,18 +34,17 @@ class PathAndRename(object):  # for path and rename a picture
 
 class Parameters(models.Model):
     key = models.CharField(_('Key'), max_length=30)
-    value = models.CharField(_('Value'), max_length=30)
 
     def __str__(self):
-        return str(self.key) + '     ...    ' + str(self.value)
+        return str(self.key)
 
     class Meta:
         verbose_name = _("Parameter")
         verbose_name_plural = _("Parameters")
 
+#########################
+#########################
 
-#########################
-#########################
 
 class Category(models.Model):
     title = models.CharField(_('Title'), max_length=50)
@@ -136,6 +135,7 @@ class Product(models.Model):
     thumb = models.CharField(_('Thumbnail'), max_length=20, null=True, blank=True, editable=False)
     order = models.PositiveIntegerField(_('Order'), default=0)
     tags = models.ManyToManyField(Tag, verbose_name=_('Tags'))
+    parameters = models.ManyToManyField(Parameters, through='ParameterValue', verbose_name=_('Parameters'))
 
     # def save(self, force_insert=False, force_update=False, using=None,
     #          update_fields=None, *args, **kwargs):
@@ -146,6 +146,19 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ParameterValue(models.Model):
+    parameter = models.ForeignKey(Parameters, verbose_name=_('Parameter'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    value = models.CharField(_('Value'), max_length=30, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.parameter.key) + ' -> ' + str(self.value)
+
+    class Meta:
+        verbose_name = _("Parameter Value")
+        verbose_name_plural = _("Parameter Values")
 
 #########################
 #########################

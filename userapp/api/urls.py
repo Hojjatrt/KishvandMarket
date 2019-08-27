@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', Login.as_view(), name='login_api'),
     path('update-user/', UserUpdate.as_view(), name='update_user_api'),
     path('address-list/', AddressListAPIView.as_view(), name='Address list'),
-    path('address/', AddressApiView.as_view(), name='Address'),
+    path('address/', AddressApiView.as_view(), name='Address Create'),
+    path('address/<str:opt>/', AddressApiView.as_view(), name='Address Update or Delete'),
 ]

@@ -217,47 +217,73 @@ class AddressApiView(APIView):
                 if user.is_anonymous:
                     content = {'code': 1, 'detail': 'user is anonymous.'}
                     return Response(content, status=status.HTTP_200_OK)
-
-                id = serializer.data.get('id', '')
-                if id:
+                opt = self.kwargs.get('opt', '')
+                if opt == 'delete':
+                    id = serializer.data.get('id', '')
+                    if id:
+                        try:
+                            add = Address.objects.get(id=id, user=user, status=1)
+                            add.status = 0
+                            add.save()
+                            content = {'code': 0, 'detail': 'Address deleted.'}
+                            return Response(content, status=status.HTTP_202_ACCEPTED)
+                        except Address.DoesNotExist:
+                            pass
+                    content = {'code': 3, 'detail': 'Address Does not exist in deleting address.'}
+                    return Response(content, status=status.HTTP_200_OK)
+                elif opt == 'update':
                     try:
-                        add = Address.objects.get(id=id, user=user, status=1)
-                        add.status = 0
-                        add.save()
-                        content = {'code': 0, 'detail': 'Address deleted.'}
-                        return Response(content, status=status.HTTP_202_ACCEPTED)
+                        id = serializer.data.get('id', None)
+                        lat = serializer.data.get('lat', None)
+                        lng = serializer.data.get('lng', None)
+                        if lat is not None and lng is not None:
+                            lat = float(lat)
+                            lng = float(lng)
+                            location = {'type': 'Point', 'coordinates': [lng, lat]}
+                        else:
+                            location = None
+                        address = serializer.data.get('address', '')
+                        phone = serializer.data.get('phone', None)
+                        name = serializer.data.get('name', None)
+                        zipcode = serializer.data.get('zipcode', None)
+                        add = Address.objects.get(id=id)
+                        add = add.objects.update(user=user, phone=phone, zipcode=zipcode,
+                                                 location=location, address=address, name=name)
+
+                        content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
+                                   'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
+                        return Response(content, status=status.HTTP_202_ACCEPTED,
+                                        headers={'Access-Control-Allow-Origin': '*'})
                     except Address.DoesNotExist:
-                        content = {'code': 3, 'detail': 'Address Does not exist in deleting address.'}
+                        content = {'code': 2, 'detail': 'address not exist in address update.'}
                         return Response(content, status=status.HTTP_200_OK)
                 else:
-                    lat = serializer.data.get('lat', None)
-                    lng = serializer.data.get('lng', None)
-                    if lat is not None and lng is not None:
-                        lat = float(lat)
-                        lng = float(lng)
-                        location = {'type': 'Point', 'coordinates': [lng, lat]}
-                    else:
-                        location = None
-                    address = serializer.data.get('address', '')
-                    phone = serializer.data.get('phone', None)
-                    name = serializer.data.get('name', None)
-                    zipcode = serializer.data.get('zipcode', None)
+                    try:
+                        lat = serializer.data.get('lat', None)
+                        lng = serializer.data.get('lng', None)
+                        if lat is not None and lng is not None:
+                            lat = float(lat)
+                            lng = float(lng)
+                            location = {'type': 'Point', 'coordinates': [lng, lat]}
+                        else:
+                            location = None
+                        address = serializer.data.get('address', '')
+                        phone = serializer.data.get('phone', None)
+                        name = serializer.data.get('name', None)
+                        zipcode = serializer.data.get('zipcode', None)
+                        add = Address.objects.create(user=user, phone=phone, zipcode=zipcode,
+                                                     location=location, address=address, name=name)
+
+                        content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
+                                   'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
+                        return Response(content, status=status.HTTP_202_ACCEPTED,
+                                        headers={'Access-Control-Allow-Origin': '*'})
+                    except:
+                        content = {'code': 2, 'detail': 'error occurred in address create.'}
+                        return Response(content, status=status.HTTP_200_OK)
             except:
-                content = {'code': 2, 'detail': 'error ecurred in address create.'}
+                content = {'code': 2, 'detail': 'error occurred in address api view.'}
                 return Response(content, status=status.HTTP_200_OK)
-
-            if user and location and address:
-                try:
-                    add = Address.objects.update_or_create(user=user, phone=phone, zipcode=zipcode,
-                                                           location=location, address=address, name=name)
-
-                    content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
-                               'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
-                    return Response(content, status=status.HTTP_201_CREATED,
-                                    headers={'Access-Control-Allow-Origin': '*'})
-                except:
-                    content = {'code': 2, 'detail': 'error ecurred in address create.'}
-                    return Response(content, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_200_OK)
 

@@ -209,7 +209,7 @@ class AddressApiView(APIView):
     serializer_class = AddressSerializer
     authentication_classes = (TokenAuthentication,)
 
-    def post(self, request, format=None):
+    def post(self, request, opt):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             try:
@@ -217,7 +217,6 @@ class AddressApiView(APIView):
                 if user.is_anonymous:
                     content = {'code': 1, 'detail': 'user is anonymous.'}
                     return Response(content, status=status.HTTP_200_OK)
-                opt = self.kwargs.get('opt', '')
                 if opt == 'delete':
                     id = serializer.data.get('id', '')
                     if id:
@@ -234,6 +233,7 @@ class AddressApiView(APIView):
                 elif opt == 'update':
                     try:
                         id = serializer.data.get('id', None)
+                        add = Address.objects.get(id=id)
                         lat = serializer.data.get('lat', None)
                         lng = serializer.data.get('lng', None)
                         if lat is not None and lng is not None:
@@ -241,21 +241,23 @@ class AddressApiView(APIView):
                             lng = float(lng)
                             location = {'type': 'Point', 'coordinates': [lng, lat]}
                         else:
-                            location = None
-                        address = serializer.data.get('address', '')
-                        phone = serializer.data.get('phone', None)
-                        name = serializer.data.get('name', None)
-                        zipcode = serializer.data.get('zipcode', None)
-                        add = Address.objects.get(id=id)
-                        add = add.objects.update(user=user, phone=phone, zipcode=zipcode,
-                                                 location=location, address=address, name=name)
-
+                            location = add.location
+                        address = serializer.data.get('address', add.addr)
+                        phone = serializer.data.get('phone', add.phone)
+                        name = serializer.data.get('name', add.name)
+                        zipcode = serializer.data.get('zipcode', add.zip_code)
+                        add.addr = address
+                        add.name = name
+                        add.phone = phone
+                        add.zip_code = zipcode
+                        add.location = location
+                        add.save()
                         content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
-                                   'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
+                                   'user': user.id, 'phone': add.phone, 'zip_code': add.zip_code}
                         return Response(content, status=status.HTTP_202_ACCEPTED,
                                         headers={'Access-Control-Allow-Origin': '*'})
                     except Address.DoesNotExist:
-                        content = {'code': 2, 'detail': 'address not exist in address update.'}
+                        content = {'code': 3, 'detail': 'address not exist in address update.'}
                         return Response(content, status=status.HTTP_200_OK)
                 else:
                     try:
@@ -271,11 +273,11 @@ class AddressApiView(APIView):
                         phone = serializer.data.get('phone', None)
                         name = serializer.data.get('name', None)
                         zipcode = serializer.data.get('zipcode', None)
-                        add = Address.objects.create(user=user, phone=phone, zipcode=zipcode,
-                                                     location=location, address=address, name=name)
+                        add = Address.objects.create(user=user, phone=phone, zip_code=zipcode,
+                                                     location=location, addr=address, name=name)
 
                         content = {'id': add.id, 'name': add.name, 'lat': lat, 'lng': lng, 'address': add.addr,
-                                   'user': user.id, 'phone': add.phone, 'zipcode': add.zip_code}
+                                   'user': user.id, 'phone': add.phone, 'zip_code': add.zip_code}
                         return Response(content, status=status.HTTP_202_ACCEPTED,
                                         headers={'Access-Control-Allow-Origin': '*'})
                     except:

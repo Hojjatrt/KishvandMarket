@@ -159,8 +159,8 @@ class Login(APIView):
 
 
 class UserUpdate(APIView):
-    permission_classes = IsClient
-    authentication_classes = TokenAuthentication
+    # permission_classes = IsClient
+    authentication_classes = (TokenAuthentication,)
     serializer_class = UserUpdateSerializer
 
     def post(self, request, format=None):
@@ -193,8 +193,9 @@ class UserUpdate(APIView):
                 user.save()
 
             content = {'code': 0, 'first_name': user.first_name,
-                       'last_name': user.last_name, 'email': user.email},
-            return Response(content, status=status.HTTP_200_OK)
+                       'last_name': user.last_name, 'email': user.email}
+            return Response(content, status=status.HTTP_200_OK,
+                            headers={'Access-Control-Allow-Origin': '*'})
 
         else:
             content = {'code': 2, 'detail': 'error in user update api'}
@@ -211,8 +212,10 @@ class AddressApiView(APIView):
 
     def post(self, request, opt):
         serializer = self.serializer_class(data=request.data)
+        # print(request.POST['id'])
         if serializer.is_valid():
             try:
+                # print(serializer.data)
                 user = request.user
                 if user.is_anonymous:
                     content = {'code': 1, 'detail': 'user is anonymous.'}
@@ -258,7 +261,8 @@ class AddressApiView(APIView):
                                         headers={'Access-Control-Allow-Origin': '*'})
                     except Address.DoesNotExist:
                         content = {'code': 3, 'detail': 'address not exist in address update.'}
-                        return Response(content, status=status.HTTP_200_OK)
+                        return Response(content, status=status.HTTP_200_OK,
+                                        headers={'Access-Control-Allow-Origin': '*'})
                 else:
                     try:
                         lat = serializer.data.get('lat', None)

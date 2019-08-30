@@ -69,7 +69,7 @@ class UserUpdateSerializer(serializers.Serializer):
 
 class AddressSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
-    phone = serializers.IntegerField(required=False)
+    phone = serializers.CharField(required=False, max_length=11, validators=[phoneValidator, ])
     name = serializers.CharField(max_length=30, required=False)
     zipcode = serializers.IntegerField(required=False)
     address = serializers.CharField(max_length=150, required=False)

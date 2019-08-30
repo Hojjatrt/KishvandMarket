@@ -45,8 +45,8 @@ class Address(models.Model):
         (1, _('Active')),
         (0, _('DeActive')),
     )
-    name = models.CharField(_('Name'), max_length=20)
-    location = PointField(_('Location'))
+    name = models.CharField(_('Name'), max_length=20, default='home')
+    location = PointField(_('Location'), default="{'type': 'Point', 'coordinates': [54.006630, 26.544604]}")
     addr = models.TextField(_('Address'), max_length=300)
     phone = models.CharField(_('Phone number'), max_length=11)
     zip_code = models.CharField(_('ZipCode'), max_length=10)

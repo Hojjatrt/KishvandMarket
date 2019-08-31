@@ -2,6 +2,7 @@ from django.http import HttpRequest
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import *
 from market.models import *
+from rest_framework import serializers
 
 ##################
 ##################
@@ -151,3 +152,29 @@ class SlideListSerializer(ModelSerializer):
 
 ##################
 ##################
+
+class CartSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    # amount = serializers.IntegerField(required=False)
+    # address = serializers.CharField(max_length=150, required=False)
+    products = serializers.CharField(required=False)
+    number = serializers.IntegerField(required=False)
+
+
+class CartListSerializer(ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+
+    class Meta:
+        model = Cart
+        fields = ('id', 'user', 'products')
+
+    def to_representation(self, instance):
+        return {
+            "id": instance.id,
+            "number": instance.number,
+            "user": instance.user.id,
+            "products": instance.products,
+        }
+
+#########################
+#########################

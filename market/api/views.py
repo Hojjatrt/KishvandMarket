@@ -139,8 +139,42 @@ class TimeListAPIView(generics.ListAPIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class CartAPIView(APIView):
     authentication_classes = (TokenAuthentication,)
-    serializer_class = TagListSerializer
+    serializer_class = CartListSerializer
 
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        # print(request.POST['id'])
+        if serializer.is_valid():
+            try:
+                # print(serializer.data)
+                user = request.user
+                if user.is_anonymous:
+                    content = {'code': 1, 'detail': 'user is anonymous.'}
+                    return Response(content, status=status.HTTP_200_OK)
+
+                else:
+                    try:
+                        # id = serializer.data.get('id', None)
+                        # add = Address.objects.get(id=id)
+                        id = request.POST.get('id', None)
+                        if id is not None:
+                            try:
+                                # number = CartProduct.number.get(id=id)
+                                products = serializer.data.get('products', None)
+
+                            except CartProduct.DoesNotExist:
+                                pass
+
+                    except id.DoesNotExist:
+                        content = {'code': 3, 'detail': 'This product not exist'}
+                        return Response(content, status=status.HTTP_200_OK,
+                                        headers={'Access-Control-Allow-Origin': '*'})
+
+            except:
+                content = {'code': 2, 'detail': 'error occurred in cart api view.'}
+                return Response(content, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_200_OK)
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)

@@ -105,9 +105,11 @@ class ProductCart_inline(admin.TabularInline):
 
 
 class CartAdmin(admin.ModelAdmin):
+    list_display = ('code', 'amount', 'customer', 'status', 'time', 'date')
+    list_display_links = ('code', 'amount', 'customer')
     list_filter = ('status',)
     inlines = [ProductCart_inline, ]
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'code')
     # form = CartAdminForm
     widgets = {
         'date': jadmin.widgets.AdminjDateWidget

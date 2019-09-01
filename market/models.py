@@ -1,5 +1,7 @@
 from uuid import uuid4
 import os, time
+
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
@@ -267,6 +269,13 @@ class Cart(models.Model):
         (3, _('Sending')),
         (4, _('Done')),
     )
+    PAYMENT_CHOICES = (
+        (0, _('Cash')),
+        (1, _('Card')),
+        (2, _('Online')),
+    )
+    code = models.PositiveIntegerField(_('Tracking Code'), unique=True,
+                                       validators=[MinValueValidator(100000), MaxValueValidator(9999999)])
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Customer'),
                                  on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, verbose_name=_('Products'), through='CartProduct')
@@ -278,9 +287,27 @@ class Cart(models.Model):
     created_at = jmodels.jDateTimeField(_('Created at'), auto_now_add=True)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=0)
     amount = models.PositiveIntegerField(_('Amount'), default=0)
+    pay_method = models.PositiveSmallIntegerField(_('Payment Method'), default=0, choices=PAYMENT_CHOICES)
+    # TODO after we write payment model uncomment this
+    # payment = models.ForeignKey(Payment, verbose_name=_('Payment Method'), on_delete=models.DO_NOTHING)
+
+    def save(self, *args, **kwargs):
+        # This means that the model isn't saved to the database yet
+        if self._state.adding:
+            # Get the maximum display_id value from the database
+            last_id = Cart.objects.all().aggregate(largest=models.Max('code'))['largest']
+
+            # aggregate can return None! Check it first.
+            # If it isn't none, just use the last ID specified (which should be the greatest) and add one to it
+            if last_id is not None:
+                self.code = last_id + 1
+            else:
+                self.code = 100001
+
+        super(Cart, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.customer) + str(self.amount)
+        return str(self.code) + ' : ' + str(self.amount)
 
 
 class CartProduct(models.Model):

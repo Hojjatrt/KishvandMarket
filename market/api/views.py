@@ -137,6 +137,50 @@ class TimeListAPIView(generics.ListAPIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class CartProductsAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = CartProductsSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, many=True)
+        if serializer.is_valid():
+            try:
+                user = request.user
+                if user.is_anonymous:
+                    content = {'code': 1, 'detail': 'user is anonymous.'}
+                    return Response(content, status=status.HTTP_200_OK)
+
+                try:
+                    response_list = []
+                    for p in serializer.validated_data:
+                        dic = {}
+                        product_id = p.get('product_id', 0)
+                        qnt = p.get('qnt', 0)
+                        product = Product.objects.get(id=product_id)
+                        stock = Stock.objects.filter(product_id=product.id).order_by('price').first()
+                        dic['product_id'] = product.id
+                        dic['qnt'] = qnt
+                        if qnt < stock.qnt:
+                            dic['status'] = 'ok'
+                        else:
+                            dic['status'] = 'nok'
+                        response_list.append(dic)
+                    content = {'code': 0, 'detail': response_list}
+                    return Response(content, status=status.HTTP_200_OK,
+                                    headers={'Access-Control-Allow-Origin': '*'})
+                except Product.DoesNotExist:
+                    content = {'code': 3, 'detail': 'This product not exist'}
+                    return Response(content, status=status.HTTP_200_OK,
+                                    headers={'Access-Control-Allow-Origin': '*'})
+
+            except:
+                content = {'code': 2, 'detail': 'error occurred in cartProduct api view.'}
+                return Response(content, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class CartAPIView(APIView):
     authentication_classes = (TokenAuthentication,)
     serializer_class = CartListSerializer
@@ -175,14 +219,23 @@ class CartAPIView(APIView):
                 return Response(content, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_200_OK)
+
+
+class CartListAPIView(generics.ListAPIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = CartListSerializer
+
+    def get_queryset(self):
+        queryset = Cart.objects.all().order_by('id')
+        queryset = queryset.filter(customer=self.request.user)
+        return queryset
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK,
                         headers={'Access-Control-Allow-Origin': '*'})
 
-
-########
 ##########################
 ##########################
 

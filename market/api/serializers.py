@@ -153,6 +153,12 @@ class SlideListSerializer(ModelSerializer):
 ##################
 ##################
 
+
+class CartProductsSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(required=True)
+    qnt = serializers.IntegerField(required=True)
+
+
 class CartSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     # amount = serializers.IntegerField(required=False)
@@ -171,8 +177,9 @@ class CartListSerializer(ModelSerializer):
     def to_representation(self, instance):
         return {
             "id": instance.id,
-            "number": instance.number,
+            "code": instance.code,
             "user": instance.user.id,
+            "status": instance.status,
             "products": instance.products,
         }
 

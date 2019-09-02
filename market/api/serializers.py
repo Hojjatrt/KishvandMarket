@@ -160,11 +160,12 @@ class CartProductsSerializer(serializers.Serializer):
 
 
 class CartSerializer(serializers.Serializer):
-    id = serializers.IntegerField(required=False)
-    # amount = serializers.IntegerField(required=False)
-    # address = serializers.CharField(max_length=150, required=False)
-    products = serializers.CharField(required=False)
-    number = serializers.IntegerField(required=False)
+    amount = serializers.IntegerField(required=True)
+    time_id = serializers.IntegerField(required=True)
+    address_id = serializers.IntegerField(required=True)
+    date = serializers.CharField(required=False, max_length=15)
+    products = CartProductsSerializer(required=True, many=True)
+    # payment = serializers.IntegerField(required=False)
 
 
 class CartListSerializer(ModelSerializer):

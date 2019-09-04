@@ -177,17 +177,6 @@ class ProductSpecie(models.Model):
 #########################
 
 
-class ProductParameter(models.Model):
-    parameters = jsonfield.JSONField(_('Parameters'), max_length=300)
-    product_id = models.OneToOneField(Product, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.parameters[:20] + "..."
-
-#########################
-#########################
-
-
 class Stock(models.Model):
     price = models.BigIntegerField(_('Price'), help_text=_('Sell in Toman'), default=0)
     discount_ratio = models.PositiveSmallIntegerField(_('Discount Ratio'), help_text=_('Discount percent %'),
@@ -274,8 +263,7 @@ class Cart(models.Model):
         (1, _('Card')),
         (2, _('Online')),
     )
-    code = models.PositiveIntegerField(_('Tracking Code'), unique=True,
-                                       validators=[MinValueValidator(100000), MaxValueValidator(9999999)])
+    code = models.CharField(_('Tracking Code'), max_length=15, unique=True)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Customer'),
                                  on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, verbose_name=_('Products'), through='CartProduct')
@@ -289,22 +277,48 @@ class Cart(models.Model):
     amount = models.PositiveIntegerField(_('Amount'), default=0)
     pay_method = models.PositiveSmallIntegerField(_('Payment Method'), default=0, choices=PAYMENT_CHOICES)
     # TODO after we write payment model uncomment this
-    # payment = models.ForeignKey(Payment, verbose_name=_('Payment Method'), on_delete=models.DO_NOTHING)
+    # payment = models.ForeignKey(Payment, verbose_name=_('Payment'), on_delete=models.DO_NOTHING)
 
     def save(self, *args, **kwargs):
         # This means that the model isn't saved to the database yet
         if self._state.adding:
             # Get the maximum display_id value from the database
-            last_id = Cart.objects.all().aggregate(largest=models.Max('code'))['largest']
-
+            # last_id = Cart.objects.all().aggregate(largest=models.Max('code'))['largest']
+            last_card = Cart.objects.all().last()
+            if last_card is not None:
+                print(last_card, last_card.code)
+            print(last_card)
             # aggregate can return None! Check it first.
-            # If it isn't none, just use the last ID specified (which should be the greatest) and add one to it
-            if last_id is not None:
-                self.code = last_id + 1
-            else:
-                self.code = 100001
-
+            self.coding(last_card)
         super(Cart, self).save(*args, **kwargs)
+
+    def coding(self, last):
+        MONTH_CHOICES = (
+            (1, 'A'),
+            (2, 'B'),
+            (3, 'C'),
+            (4, 'D'),
+            (5, 'E'),
+            (6, 'G'),
+            (7, 'H'),
+            (8, 'I'),
+            (9, 'J'),
+            (10, 'K'),
+            (11, 'L'),
+            (12, 'M'),
+        )
+        date = jdatetime.datetime.now().date()
+        year = str(date.year)[2:]
+        month = MONTH_CHOICES[date.month - 1][1]
+        if last is None:
+            self.code = year + month + '-' + str(100001)
+            return
+        last_code = last.code.split('-')
+        if year + month == last_code[0]:
+            self.code = year + month + '-' + str(int(last_code[1]) + 1)
+        else:
+            self.code = year + month + '-' + str(100001)
+        return
 
     def __str__(self):
         return str(self.code) + ' : ' + str(self.amount)

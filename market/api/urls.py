@@ -13,6 +13,7 @@ urlpatterns = [
     path('times/<str:day>/', TimeListAPIView.as_view(), name='time services'),
     path('slides/', SlideAPIView.as_view(), name='Slides'),
     path('check-products/', CartProductsAPIView.as_view(), name='Check CartProducts'),
-    path('cart/', CartAPIView.as_view(), name='Carts')
-
+    path('cart/', CartAPIView.as_view(), name='Cart'),
+    path('cart/<int:id>/', CartDetailAPIView.as_view(), name='Cart Detail'),
+    path('cart-list/', CartListAPIView.as_view(), name='Cart list'),
 ]

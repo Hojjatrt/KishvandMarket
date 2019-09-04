@@ -159,6 +159,15 @@ class CartProductsSerializer(serializers.Serializer):
     qnt = serializers.IntegerField(required=True)
 
 
+class CartProductsDetailSerializer(ModelSerializer):
+    product_id = serializers.ReadOnlyField(source='product.id')
+    qnt = serializers.ReadOnlyField(source='number')
+
+    class Meta:
+        model = CartProduct
+        fields = ('product_id', 'qnt')
+
+
 class CartSerializer(serializers.Serializer):
     amount = serializers.IntegerField(required=True)
     time_id = serializers.IntegerField(required=True)
@@ -169,20 +178,22 @@ class CartSerializer(serializers.Serializer):
 
 
 class CartListSerializer(ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.id')
+    time = serializers.StringRelatedField()
 
     class Meta:
         model = Cart
-        fields = ('id', 'user', 'products')
+        fields = ('id', 'code', 'date', 'status',
+                  'time')
 
-    def to_representation(self, instance):
-        return {
-            "id": instance.id,
-            "code": instance.code,
-            "user": instance.user.id,
-            "status": instance.status,
-            "products": instance.products,
-        }
+
+class CartDetailSerializer(ModelSerializer):
+    time = serializers.StringRelatedField()
+    products = CartProductsDetailSerializer(source='cartproduct_set', many=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%S", read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = '__all__'
 
 #########################
 #########################

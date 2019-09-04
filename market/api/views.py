@@ -156,6 +156,7 @@ def check_products(products):
         else:
             check = False
             dic['status'] = 'nok'
+            dic['msg'] = 'max order'
         li.append(dic)
     return li, check, amount
 
@@ -215,7 +216,7 @@ class CartAPIView(APIView):
                     address_id = serializer.validated_data.get('address_id', 0)
                     amount = serializer.validated_data.get('amount', 0)
                     date = serializer.validated_data.get('date', None)
-                    if date is None:
+                    if date is None or date != 'tomorrow':
                         date = jdatetime.datetime.now().date()
                     elif date == 'tomorrow':
                         date = jdatetime.datetime.now().date() + jdatetime.timedelta(days=1)
@@ -233,7 +234,7 @@ class CartAPIView(APIView):
                         qnt = p.get('qnt', 0)
                         CartProduct.objects.create(cart_id=cart.id, product_id=product_id, number=qnt)
 
-                    content = {'code': 0, 'id': cart.id, 'date': date, 'time': time.id, 'amount': main_amount,
+                    content = {'code': cart.code, 'id': cart.id, 'date': str(date), 'time': time.id, 'amount': main_amount,
                                'status': cart.status, 'payment': cart.pay_method}
                     return Response(content, status=status.HTTP_200_OK,
                                     headers={'Access-Control-Allow-Origin': '*'})
@@ -260,16 +261,38 @@ class CartAPIView(APIView):
 class CartListAPIView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication,)
     serializer_class = CartListSerializer
+    pagination_class = SmallPagesPagination
 
     def get_queryset(self):
-        queryset = Cart.objects.all().order_by('id')
-        queryset = queryset.filter(customer=self.request.user)
-        return queryset
+        if not self.request.user.is_anonymous:
+            queryset = Cart.objects.all().order_by('id')
+            queryset = queryset.filter(customer=self.request.user)
+            return queryset
+        else:
+            return Cart.objects.none()
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK,
+        li = super(CartListAPIView, self).list(request, args, kwargs)
+        return Response(li.data, status=status.HTTP_200_OK,
+                        headers={'Access-Control-Allow-Origin': '*'})
+
+
+class CartDetailAPIView(generics.RetrieveAPIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = CartDetailSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        if not self.request.user.is_anonymous:
+            queryset = Cart.objects.all()
+            queryset = queryset.filter(customer=self.request.user)
+            return queryset
+        else:
+            return Cart.objects.none()
+
+    def get(self, request, *args, **kwargs):
+        ret = self.retrieve(request)
+        return Response(ret.data, status=status.HTTP_200_OK,
                         headers={'Access-Control-Allow-Origin': '*'})
 
 ##########################

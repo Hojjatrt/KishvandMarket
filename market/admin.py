@@ -19,11 +19,6 @@ class ProductSpecies_inline(admin.TabularInline):
     extra = 0
 
 
-class ProductParameters_inline(admin.TabularInline):
-    model = ProductParameter
-    extra = 0
-
-
 class ProductStocks_inline(admin.TabularInline):
     model = Stock
     extra = 0
@@ -40,7 +35,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('status', 'categories')
     list_display_links = ('id', 'name',)
     readonly_fields = ('thumb',)
-    inlines = (ProductSpecies_inline, ProductParameters_inline, ProductStocks_inline,
+    inlines = (ProductSpecies_inline, ProductStocks_inline,
                ProductImage_inline, ParameterValue_inline)
     form = ProductAdminForm
 

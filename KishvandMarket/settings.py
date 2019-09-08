@@ -116,13 +116,11 @@ REST_FRAMEWORK = {
 }
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (26.535254, 53.976629),
-    'DEFAULT_ZOOM': 12,
-    'MIN_ZOOM': 10,
+    'MIN_ZOOM': 4,
     'MAX_ZOOM': 18,
     'SCALE': 'both',
+    'DEFAULT_ZOOM': 12,
     'ATTRIBUTION_PREFIX': 'Powered by NHP',
-    # 'MINIMAP': True,
-    'SPATIAL_EXTENT': (53.766837, 26.619103, 54.209680, 26.446682),
 }
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

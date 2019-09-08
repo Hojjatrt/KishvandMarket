@@ -14,6 +14,13 @@ class AddressAdmin(LeafletGeoAdmin):
     list_filter = ('user',)
     list_display_links = ('name', 'address',)
 
+    settings_overrides = {
+        'DEFAULT_CENTER': (26.535254, 53.976629),
+        'MIN_ZOOM': 10,
+        'MAX_ZOOM': 18,
+        'SCALE': 'both',
+        'SPATIAL_EXTENT': (53.766837, 26.619103, 54.209680, 26.446682),
+    }
     def address(self, obj):
         return obj.addr[:25] + '...'
 

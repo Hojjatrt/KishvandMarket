@@ -1,6 +1,6 @@
 certifi==2019.6.16
 chardet==3.0.4
-Django==2.1.11
+Django==2.2.10
 django-autocomplete-light==3.4.1
 django-filter==2.2.0
 django-geojson==2.12.0
